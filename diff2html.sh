@@ -45,8 +45,7 @@ mawk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
 	mod_index=0;
 	}
 
-
-function transformStr(str_to_replace) {
+function str2htm(str_to_replace) {
 	gsub("\\&","\\&amp",str_to_replace);
 	gsub("<","\\&lt",str_to_replace);
 	gsub(">","\\&gt",str_to_replace);
@@ -67,14 +66,14 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 
 /^\-/{ 
 	diff_str=substr($0,2);
-	html_str=transformStr(diff_str);
+	html_str=str2htm(diff_str);
 	del_arr[array_len] = html_str;
 	array_len++;
 }
 
 /^\*/{
 	diff_str=substr($0,2);
-	html_str=transformStr(diff_str);
+	html_str=str2htm(diff_str);
 	if (array_len > 0) {
 		for (del_index in del_arr) {
 			writeLine(file1_lc++,del_arr[del_index],"&nbsp;","&nbsp;","removed","removed");
@@ -87,10 +86,8 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 
 /^\+/{ 
 	diff_str=substr($0,2);
-	html_str=transformStr(diff_str);
+	html_str=str2htm(diff_str);
 	if (array_len > 0) {		
-		#print array_len;
-		#print "-" del_arr[array_len] "|" html_str;
 		writeLine(file1_lc++,del_arr[mod_index],file2_lc++,html_str,"modified","modified");
 		mod_index++;
 		array_len--;
