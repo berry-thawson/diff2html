@@ -5,7 +5,7 @@ This aims to generates output similar to EugenDueck's script but in a faster way
 But for diff of 67,000 line file, it took 12 min 40 sec, whereas diff took a fraction of second. That's why I thought there is something fishy about the script, however clean implementation seems to be.
 
 ## Requirements:
-This script employs awk and I checked it against gawk 4.1.3 and mawk 1.3.3. These were the versions I encountered in many systems. Please suggest if there were were any other variants that needs to be supported.
+This script employs awk and I checked it against gawk 4.1.3 and mawk 1.3.3. These were the versions I encountered in many systems. Please suggest if there are any other variants that needs to be supported.
 
 ## TL;DR
 Using shell script for this task makes the script very slow for any non trivial files exceeding 10000 loc. I needed something like this and when I used EugenDueck's script I noticed the inherent vice.  Also, there were some bugs in the the formatted output. And, when I used awk for this it resulted in more succint and readable script. Also for the big file I mentioned processing time reduced from 12 min 40 sec to 0.2 sec!
