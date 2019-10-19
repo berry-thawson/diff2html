@@ -42,6 +42,7 @@ mawk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
 	file2_lc=0;
 	diff_line_lc=0;
 	split("", del_arr);
+	mod_index=0;
 	}
 
 
@@ -56,18 +57,19 @@ function transformStr(str_to_replace) {
 
 function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	print "\t<tr>";
-	print "\t\t<td class=\"linenum\">", linenum1, "</td>";
-	print "\t\t<td class=\"",type1,"\">",line1,"</td>";
+	print "\t\t<td class=\"linenum\">" linenum1 "</td>";
+	print "\t\t<td class=\"" type1 "\">" line1 "</td>";
 	print "\t\t<td width=\"16\">&nbsp;</td>";
-	print "\t\t<td class=\"linenum\">", linenum2, "</td>";
-	print "\t\t<td class=\"",type2,"\">",line2,"</td>";
+	print "\t\t<td class=\"linenum\">" linenum2 "</td>";
+	print "\t\t<td class=\"" type2 "\">" line2 "</td>";
 	print "\t</tr>";
 }
 
 /^\-/{ 
 	diff_str=substr($0,2);
 	html_str=transformStr(diff_str);
-	del_arr[array_len++] = html_str;
+	del_arr[array_len] = html_str;
+	array_len++;
 }
 
 /^\*/{
@@ -87,11 +89,14 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	diff_str=substr($0,2);
 	html_str=transformStr(diff_str);
 	if (array_len > 0) {		
-		writeLine(file1_lc++,del_arr[del_index],file2_lc++,html_str,"modified","modified");
+		#print array_len;
+		#print "-" del_arr[array_len] "|" html_str;
+		writeLine(file1_lc++,del_arr[mod_index],file2_lc++,html_str,"modified","modified");
+		mod_index++;
 		array_len--;
 		if (array_len == 0) {
-			change_index = array_len = 0;
 			delete del_arr;
+			mod_index = 0;
 		}
 	} else {
 		writeLine("&nbsp;","&nbsp;",file2_lc++,html_str,"added","added");
