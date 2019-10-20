@@ -11,8 +11,8 @@ This script employs awk and I checked it against gawk 4.1.3 and mawk 1.3.3. Thes
 Using shell script for this task makes the script very slow for any non trivial files exceeding 10000 loc. I needed something like this and when I used EugenDueck's script I noticed the inherent vice.  Also, there were some bugs in the the formatted output. And, when I used awk for this it resulted in more succint and readable script. Also for the big file I mentioned processing time reduced from 12 min 40 sec to 0.2 sec!
 
 ## Confession:
-I am just a passerby in scripting world and I don't claim any correctness of my opinions. This is the impression I got when I worked throgh this problems and it would really helpful for me if anybody could give some insights on these kind of scripts. thanks in advance.
-Also this script, the core funtionality of the mentioned script. And, other things are to be to be added. Please feel free to give any suggestions.
+I am just a passerby in scripting world and I don't claim any correctness of my opinions. This is the impression I got when I worked through this problems and it would really helpful for me if anybody could give some insights on these kind of scripts. Thanks in advance.
+Also this script, the replicates the core funtionality of the mentioned script but by different means. Other things are to be to be added. Please feel free to give any suggestions.
 
 ## How it works:
 * To meke it easy for awk to process diff as single input we are labeling the input(+ - added, - - delete, * - same) by this:
