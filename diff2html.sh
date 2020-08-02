@@ -4,7 +4,7 @@
 file1="${1}"
 file2="${2}"
 
-mawk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
+awk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
 
 	#Printing the header and file names.
 	#css is default now.
@@ -42,16 +42,17 @@ mawk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
         <th width=\"45%\"><strong><big>",file2_name,"</big></strong></th>\
     </tr>";
     	#Initializing line counter variables to 0.
-	file1_lc=0;
-	file2_lc=0;
+	file1_lc = 0;
+	file2_lc = 0;
 	#This is used to initialize an empty array.
 	#This is needed for compatibility with mawk.
 	#Gawk is pretty nice to these.
 	split("", del_arr);
-	mod_index=0;
+	mod_index = 0;
+	top_index = 0;
 }
 
-#Convert a caertain string chars with certain html chars.
+#Convert a certain string chars with certain html chars.
 function str2htm(str_to_replace) {
 	gsub("\\&","\\&amp",str_to_replace);
 	gsub("<","\\&lt",str_to_replace);
@@ -73,8 +74,39 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	print "\t</tr>";
 }
 
+#The command "diff --unchanged-line-format='* %L' --new-line-format='+ %L' --old-line-format='- %L' $file1 $file2"
+#converts the diff output into single stream of lines.
+
 #diff line input is labelled as "marker line_input" where,
 #marker can be +, - and *.
+
+# + -> added
+# - -> deleted 
+# * -> unmodified
+
+#Awk script reads the corressponding header and acts accrodingly.
+#When we encounter a unmodified line, the decision can be taken independently.
+#But, problem kicks in when there is a modified block. Because, a modified block is does not have a special representation
+#It is represented by a block of deleted lines, followed by block of added lines.
+
+#Since, we trying to show this side by side, we have to wait and see what is next block that comes in to take decision on what to do.
+#So, we operate on blocks not on lines.
+
+# Deleted block -> Append the line to the del_buffer and then print once next block or EOF arrives.
+
+# Unmodified block -> If del_buffer is empty, continue printing the current line for both files as unmodified.
+                      Else, print all the all the lines in the del_buffer and then continue the default action.   
+		      
+# Added block -> If del_buffer is not empty, print the nth line from del_buffer, where n is the current index of line in the added block.
+                 Else, print the current line as added.
+		 
+# TODO:
+# * Noticed that mawk is not keeping the insertion order, and not sure how long gawk can maintain the insertion order.
+#   We just need a number indexed array. So, going to change the for each to for loop with incrementing the number index.
+# * Also, intially it was assumed that addition blocks and deletion blocks will be of same size. Turns our that is not the case.
+#   Hence we are going to fix that too.
+# * Have to add test cases for all the possible scenarios.
+
 
 #Saving the html_str in del_arr.
 #This is because only when next block after deletion comes,
