@@ -21,8 +21,8 @@ diff2html.sh /path/to/file1.txt /path/to/file2.txt
 * Then we read each line and act based on labels we have.
 * For deletion we don't immediately write it to output, if we encounter addition after deletion block, we write both addition and deletion block together as modified. Else, we write the whole deletion block's html output and then proceed for the currrent input (i.e. unchanged input).
 
-That's it. Nice??
-
+That's it.
+Please refer the script itself for further details. It is commented in detail and simple. Please reach out if anything is wrong.
 
 ## TL;DR
 Using shell script for this task makes the script very slow for any non trivial files exceeding 10000 loc. I needed something like this and when I used EugenDueck's script I noticed the inherent vice.  Also, there were some bugs in the the formatted output. And, when I used awk for this it resulted in more succint and readable script. Also for the big file I mentioned processing time reduced from 12 min 40 sec to 0.2 sec!
