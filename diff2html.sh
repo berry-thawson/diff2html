@@ -49,7 +49,7 @@ awk -v file1_name="${1}" -v file2_name="${2}" 'BEGIN {
 	#Gawk is pretty nice to these.
 	split("", del_arr);
 	mod_index = 0;
-	top_index = 0;
+	top_index = -1;
 }
 
 #Convert a certain string chars with certain html chars.
@@ -100,7 +100,7 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 # Added block -> If del_buffer is not empty, print the nth line from del_buffer, where n is the current index of line in the added block.
                  Else, print the current line as added.
 		 
-# TODO:
+# Fixed:
 # * Noticed that mawk is not keeping the insertion order, and not sure how long gawk can maintain the insertion order.
 #   We just need a number indexed array. So, going to change the for each to for loop with incrementing the number index.
 # * Also, intially it was assumed that addition blocks and deletion blocks will be of same size. Turns our that is not the case.
@@ -118,6 +118,7 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	html_str=str2htm(diff_str);
 	del_arr[array_len] = html_str;
 	array_len++;
+	top_index++;
 }
 
 #We first write the del_arr output, and then write the normal output.
@@ -125,11 +126,13 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	diff_str=substr($0,2);
 	html_str=str2htm(diff_str);
 	if (array_len > 0) {
-		for (del_index in del_arr) {
+		for (del_index = mod_index; del_index <= top_index; del_index++) {
 			writeLine(file1_lc++,del_arr[del_index],"&nbsp;","&nbsp;","removed","removed");
 			delete del_arr[del_index];
 		}
-		array_len=0;
+		array_len = 0;
+		top_index = -1;
+		mod_index = 0;
 	}
 	writeLine(file1_lc++,html_str,file2_lc++,html_str,"normal","normal");
 }
@@ -142,11 +145,13 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 	html_str=str2htm(diff_str);
 	if (array_len > 0) {		
 		writeLine(file1_lc++,del_arr[mod_index],file2_lc++,html_str,"modified","modified");
+		delete del_arr[mod_index];
 		mod_index++;
-		array_len--;
+		array_len--;		
 		if (array_len == 0) {
 			delete del_arr;
 			mod_index = 0;
+			top_index = -1;
 		}
 	} else {
 		writeLine("&nbsp;","&nbsp;",file2_lc++,html_str,"added","added");
@@ -154,9 +159,15 @@ function writeLine(linenum1,line1,linenum2,line2,type1,type2) {
 }
 
 END {
+	if (array_len > 0) {
+		for (del_index = mod_index; del_index <= top_index; del_index++) {
+			writeLine(file1_lc++,del_arr[del_index],"&nbsp;","&nbsp;","removed","removed");			
+			delete del_arr[del_index];
+		}
+	}
 
-	print "		</table>\
+        print "		</table>\
 		<hr/>\
-    </body>\
+    	</body>\
     </html>";
 }'  <(diff --unchanged-line-format='* %L' --new-line-format='+ %L' --old-line-format='- %L' $file1 $file2);
