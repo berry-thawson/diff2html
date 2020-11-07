@@ -2,6 +2,9 @@
 A script that employs awk and bash to html output of diff between 2 files quickly*.
 
 This aims to generates output similar to EugenDueck's script but in a faster way. (https://github.com/EugenDueck/diff2html/blob/master/diff2html)
+Update :
+The reference project is not hosted on the github anymore. But, there is an archived version available from wayback machine (http://web.archive.org/web/20180612205114/https://github.com/EugenDueck/diff2html).
+And also, it is hosted in sourceforge too(https://sourceforge.net/projects/diff2html/).
 But for diff of 67,000 line file, it took 12 min 40 sec, whereas diff took a fraction of second. That's why I thought there is something fishy about the script, however clean implementation seems to be.
 
 ## Requirements:
